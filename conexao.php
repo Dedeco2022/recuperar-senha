@@ -3,7 +3,7 @@
 /**
  * Faz uma conexão com o banco de dados MySQL, na base de dados rec-senha.
  * 
- * @return retorna uma conexão com a base de dados, ou em caso de falha mata a execução e exibe o erro.
+ * @return \mysqli retorna uma conexão com a base de dados, ou em caso de falha mata a execução e exibe o erro.
  */
 function conectar()
 {
@@ -13,4 +13,14 @@ function conectar()
         die();
     }
     return $conexao;
+}
+
+function executarSQL($conexao, $sql)
+{
+    $resultado = mysqli_query($conexao, $sql);
+    if ($resultado === false) {
+        echo "Erro ao executar o comando sql!" . mysqli_errno($conexao) . ":" . mysqli_error($conexao);
+        die();
+    }
+    return $resultado;
 }
