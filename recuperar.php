@@ -23,6 +23,7 @@ $token = bin2hex(random_bytes(50));
 require_once 'PHPMailer/src/PHPMailer.php';
 require_once 'PHPMailer/src/SMTP.php';
 require_once 'PHPMailer/src/Exception.php';
+include 'config.php';
 
 $mail = new PHPMailer(true);
 try {
@@ -34,11 +35,36 @@ try {
     $mail -> isSMTP(); //envia o e-mail usando SMTP
     $mail -> Host = 'smtp.gmail.com';
     $mail -> SMTPAuth = true;
-    $mail -> Username = 'maria.2022315574@aluno.iffar.edu.br';
-    $mail -> Password = '';
+    $mail -> Username = $config['email'];
+    $mail -> Password = $config['senha_email'];
     $mail -> SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail -> Port = 587;
+    $mail -> SMTPOptions = array (
+        'ssl'=> array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+        )
+     );
+    //recipients
+    $mail -> setFrom($config['email'], 'Aula de tópicos');
+    $mail -> addAddress($usuario['email'], $usuario['nome']);
+    $mail -> addReplyTo($config['email'], 'Aula de tópicos');
 
+    //content
+    $mail -> isHTML(true);
+    $mail -> Subject = 'Recuperação de Senha do Sistema';
+    $mail -> Body = 'Olá <br> 
+            Você solicitou a recuperação da sua conta no nosso sistema.
+            Para isso, clique no link abaixo para realizar a troca de senha:<br>
+            <a href = "'. $_SERVER['SERVER_NAME'].'/nova-senha.php?email=' .$usuario['email'] . 
+            '&token='.$token . '">Clique aqui para recuperar o acesso a sua conta!</a><br><br>
+            Atenciosamente <br>
+            Equipe do sistema...';
+
+            $mail ->send();
+            echo 'Email enviado com sucesso!<br> Confira seu e-mail.';
+            
 } catch (Exception $e) {
     echo "Não foi possível enviar o e-mail.
         Mailer Error: {$mail->ErrorInfo}";
