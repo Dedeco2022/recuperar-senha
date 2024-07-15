@@ -23,7 +23,7 @@ $token = bin2hex(random_bytes(50));
 require_once 'PHPMailer/src/PHPMailer.php';
 require_once 'PHPMailer/src/SMTP.php';
 require_once 'PHPMailer/src/Exception.php';
-include 'config.php';
+include 'configcopia.php';
 
 $mail = new PHPMailer(true);
 try {
@@ -64,14 +64,18 @@ try {
 
             //gravar informações na tabela recuperar-senha
             $data = new DateTime('now');
-            $agora = $data ->format('Y-m-d H:i:s');
-            $sql2= "INSERT INTO recuperar-senha(email, data_criacao, token, usado) VALUES ('".$usuario['email'] ."','$agora', '$token', 0)";
+            $agora = $data->format('Y-m-d H:i:s');
+            $sql2= "INSERT INTO recuperar_senha(email, data_criacao, token, usado) VALUES ('".$usuario['email'] ."','$agora', '$token', 0)";
 
 
 
             $mail ->send();
             echo 'Email enviado com sucesso!<br> Confira seu e-mail.';
-            
+            date_default_timezone_set('America/Sao_Paulo');
+            $data = new DateTime('now');
+            $agora = $data ->format('Y-m-d H:i:s');
+            $sql2= "INSERT INTO recuperar_senha (email, data_criacao, token, usado) VALUES ('".$usuario['email']."', '$agora', '$token', 0)";
+            executarSQL($conexao, $sql2);
 } catch (Exception $e) {
     echo "Não foi possível enviar o e-mail.
         Mailer Error: {$mail->ErrorInfo}";
